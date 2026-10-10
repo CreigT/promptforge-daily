@@ -1,0 +1,54 @@
+function renderStore() {
+  const grid = document.getElementById('product-grid');
+  if (!grid || typeof CONFIG === 'undefined') return;
+  document.getElementById('brand-name').textContent = CONFIG.brand.name;
+  document.getElementById('footer-brand').textContent = CONFIG.brand.name;
+  grid.innerHTML = CONFIG.products.map(p => `
+    <div class="product-card">
+      <h3>${p.name}</h3>
+      <p>${p.short || p.description}</p>
+      <div class="price">$${p.price}</div>
+      <a href="product.html?id=${p.id}" class="cta">View & Buy</a>
+    </div>
+  `).join('');
+}
+
+function renderProduct() {
+  const container = document.getElementById('product-detail');
+  if (!container || typeof CONFIG === 'undefined') return;
+  document.getElementById('brand-name').textContent = CONFIG.brand.name;
+  document.getElementById('footer-brand').textContent = CONFIG.brand.name;
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get('id');
+  const product = CONFIG.products.find(p => p.id === id);
+  if (!product) {
+    container.innerHTML = '<p>Product not found. <a href="store.html">Back to store</a></p>';
+    return;
+  }
+  container.innerHTML = `
+    <h1>${product.name}</h1>
+    <div class="price">$${product.price}</div>
+    <p>${product.description}</p>
+    <h3 style="margin-top:1.5rem;">Free preview</h3>
+    <pre style="background:#1e293b;padding:1rem;border-radius:8px;margin:1rem 0;white-space:pre-wrap;">${product.preview}</pre>
+    <button id="checkout-btn" class="cta">Buy Now – $${product.price}</button>
+    <p style="margin-top:1rem;color:#94a3b8;">Secure payment via Stripe. Instant digital delivery after payment.</p>
+    <p style="margin-top:0.5rem;color:#64748b;font-size:0.9rem;">Refund policy: digital products are delivered immediately. Contact support if something is wrong.</p>
+  `;
+
+  document.getElementById('checkout-btn').onclick = () => {
+    const key = CONFIG.stripe.publishableKey;
+    if (!key || key.includes('your_key_here')) {
+      alert('Add your Stripe publishable key in config.js first.\n\nThen push and redeploy.');
+      return;
+    }
+    // Day 1 simple flow: redirect to success so the masses can see the full path.
+    // Full Checkout Session (serverless) can be added later without changing the public pages.
+    window.location.href = `success.html?product=${product.id}`;
+  };
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderStore();
+  renderProduct();
+});

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PromptForge Daily</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="config.js"></script>
+</head>
+<body>
+  <header>
+    <nav>
+      <div class="logo" id="brand-name">PromptForge Daily</div>
+      <a href="store.html">Store</a>
+    </nav>
+  </header>
+  <main>
+    <section class="hero">
+      <h1>Simple AI products.<br>Clear prices. Instant delivery.</h1>
+      <p id="tagline">Digital prompt packs you can buy and use today. No complicated setup. Reasonable paywalls.</p>
+      <a href="store.html" class="cta">See Today's Products</a>
+    </section>
+    <section class="features">
+      <div class="card">
+        <h3>Free preview</h3>
+        <p>Read a sample before you buy. No surprises.</p>
+      </div>
+      <div class="card">
+        <h3>One-click checkout</h3>
+        <p>Pay with Stripe. Get the download link right away.</p>
+      </div>
+      <div class="card">
+        <h3>You only edit one file</h3>
+        <p>Change products and your Stripe key in config.js. Push. Done.</p>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <p>© 2026 <span id="footer-brand">PromptForge Daily</span>. <a id="support-link" href="mailto:support@example.com">Support</a></p>
+  </footer>
+  <script>
+    document.getElementById('brand-name').textContent = CONFIG.brand.name;
+    document.getElementById('tagline').textContent = CONFIG.brand.tagline;
+    document.getElementById('footer-brand').textContent = CONFIG.brand.name;
+    document.getElementById('support-link').href = 'mailto:' + CONFIG.brand.supportEmail;
+  </script>
+</body>
+</html>
