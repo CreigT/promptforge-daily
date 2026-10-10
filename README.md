@@ -2,56 +2,60 @@
 
 Simple AI commerce store for the masses.
 
-**You only edit `config.js`.** Everything else is already built.
+**You only edit `config.js` + one Vercel environment variable.** Everything else is already built.
 
 ---
 
-## Quick Start (5 minutes)
+## Quick Start (real payments)
 
-1. **Get a Stripe key** (free test mode is fine to start)  
-   Go to [https://dashboard.stripe.com/apikeys](https://dashboard.stripe.com/apikeys) → copy the **Publishable key** (starts with `pk_test_` or `pk_live_`).
+1. **Get your Stripe keys**  
+   Go to [https://dashboard.stripe.com/apikeys](https://dashboard.stripe.com/apikeys)
+   - Copy the **Publishable key** (`pk_test_…` or `pk_live_…`)
+   - Copy the **Secret key** (`sk_test_…` or `sk_live_…`)
 
-2. **Edit `config.js`** (this is the only file you change):
-   - Paste your Stripe key into `stripe.publishableKey`
-   - Update brand name, tagline, and support email if you want
-   - Edit the three products (name, price, short description, full description, preview text)
+2. **Edit `config.js`** (only public values):
+   - Paste the publishable key into `stripe.publishableKey`
+   - Update brand name, tagline, support email, and product details if you want
 
-3. **Deploy to Vercel**
-   - Go to [vercel.com](https://vercel.com) → Add New → Project
-   - Import `CreigT/promptforge-daily`
-   - Framework Preset: **Other** (leave Build Command and Output Directory blank)
-   - Click Deploy
+3. **Set the secret key in Vercel** (never put this in the repo):
+   - In your Vercel project → Settings → Environment Variables
+   - Add: `STRIPE_SECRET_KEY` = your secret key
+   - Redeploy (or it will pick up on next push)
 
-4. **Done.** Your store is live. Any future change to `config.js` + push will auto-redeploy.
+4. **Deploy / redeploy**
+   - Import `CreigT/promptforge-daily` if you haven’t already
+   - Framework Preset: **Other**
+   - Deploy
+
+Customers now go to real Stripe Checkout. After they pay they land on the success page.
 
 ---
 
-## What the store does right now
+## What the store does now
 
 - Landing page with plain-language explanation
 - Product catalog with clear prices
 - Product detail page with free preview
-- Buy button that checks for a real Stripe key
-- Success page after purchase (demo delivery link)
-
-The public pages stay simple so anyone can understand and operate the store.
+- Buy button creates a real Stripe Checkout Session and redirects the customer
+- Success page after successful payment
 
 ---
 
-## Before Production Completion
+## Before Full Production Completion
 
-These items are intentionally left for the next modules so the first version stays simple and usable today. Complete them when you want real money and real delivery:
+These remaining items make delivery and support fully automatic:
 
 | Step | Status | What to do |
 |------|--------|------------|
-| Real Stripe Checkout | Not yet | Add a tiny serverless function (Vercel API route) that creates a Checkout Session and redirects the customer. Webhook to mark the order paid. |
-| Unique download links | Not yet | After successful payment, generate a time-limited or one-time download URL (or email the file). Currently the success page uses a placeholder link. |
-| Email receipt | Not yet | Send a confirmation email with the download link (Resend, SendGrid, or similar free tier). |
-| Refund policy page | Optional | Add a short `/refund.html` page and link it in the footer. |
-| Custom domain | Optional | Add your domain in the Vercel project settings. |
-| Analytics | Optional | Enable Vercel Analytics or add a simple privacy-friendly tracker. |
+| Real Stripe Checkout | Done | Uses `/api/create-checkout` |
+| Unique download links | Not yet | After payment, generate a one-time or time-limited download URL (or email the file). Success page currently shows a placeholder. |
+| Email receipt | Not yet | Send confirmation + download link (Resend free tier works well). |
+| Webhook (optional) | Not yet | Listen for `checkout.session.completed` to mark orders paid and trigger delivery. |
+| Refund policy page | Optional | Add a short `/refund.html` and link it in the footer. |
+| Custom domain | Optional | Add your domain in Vercel project settings. |
+| Analytics | Optional | Enable Vercel Analytics. |
 
-You can run the store in demo mode today (real key + success page) while you add the real Checkout Session later. The public HTML does not need to change when you add the backend.
+The public pages stay simple. You can ship real payments today and add automatic delivery later.
 
 ---
 
@@ -59,13 +63,14 @@ You can run the store in demo mode today (real key + success page) while you add
 
 | File | Edit? | Purpose |
 |------|-------|---------|
-| `config.js` | **Yes** | Brand, Stripe key, products |
+| `config.js` | **Yes** | Brand, publishable key, products |
+| `api/create-checkout.js` | No | Creates real Stripe Checkout Sessions |
 | `index.html` | No | Landing page |
 | `store.html` | No | Product list |
 | `product.html` | No | Detail + paywall |
 | `success.html` | No | After payment |
 | `style.css` | No | Styles |
-| `script.js` | No | Renders products from config |
+| `script.js` | No | Renders products and starts checkout |
 | `vercel.json` | No | Security headers |
 
 ---
@@ -74,4 +79,4 @@ You can run the store in demo mode today (real key + success page) while you add
 
 Questions or issues → open a GitHub issue on this repo or email the support address you set in `config.js`.
 
-Ready for the masses. Add your variables and ship.
+Real payments are ready. Add your keys and ship.
