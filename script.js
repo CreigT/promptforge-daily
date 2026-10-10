@@ -36,15 +36,37 @@ function renderProduct() {
     <p style="margin-top:0.5rem;color:#64748b;font-size:0.9rem;">Refund policy: digital products are delivered immediately. Contact support if something is wrong.</p>
   `;
 
-  document.getElementById('checkout-btn').onclick = () => {
+  document.getElementById('checkout-btn').onclick = async () => {
     const key = CONFIG.stripe.publishableKey;
     if (!key || key.includes('your_key_here')) {
-      alert('Add your Stripe publishable key in config.js first.\n\nThen push and redeploy.');
+      alert('Add your Stripe publishable key in config.js first.\n\nThen set STRIPE_SECRET_KEY in Vercel environment variables and redeploy.');
       return;
     }
-    // Day 1 simple flow: redirect to success so the masses can see the full path.
-    // Full Checkout Session (serverless) can be added later without changing the public pages.
-    window.location.href = `success.html?product=${product.id}`;
+
+    const btn = document.getElementById('checkout-btn');
+    btn.disabled = true;
+    btn.textContent = 'Redirecting to Stripe…';
+
+    try {
+      const res = await fetch('/api/create-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          productId: product.id,
+          successUrl: window.location.origin + '/success.html?product=' + product.id + '&session_id={CHECKOUT_SESSION_ID}',
+          cancelUrl: window.location.href
+        })
+      });
+      const data = await res.json();
+      if (!res.ok || !data.url) {
+        throw new Error(data.error || 'Could not start checkout');
+      }
+      window.location.href = data.url;
+    } catch (err) {
+      alert('Checkout failed: ' + err.message);
+      btn.disabled = false;
+      btn.textContent = `Buy Now – $${product.price}`;
+    }
   };
 }
 
